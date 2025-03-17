@@ -1,15 +1,15 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { Select, SelectItem } from "@heroui/select";
-import { useState, useEffect } from "react";
+import { Card, CardBody, CardHeader } from '@heroui/card';
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
+import { Select, SelectItem } from '@heroui/select';
+import { useState, useEffect } from 'react';
 
-import DefaultLayout from "@/layouts/default";
-import { title } from "@/components/primitives";
+import DefaultLayout from '@/layouts/default';
+import { title } from '@/components/primitives';
 
 interface Transaction {
   id: string;
-  type: "buy" | "sell";
+  type: 'buy' | 'sell';
   price: number;
   amount: number;
   quantity: number;
@@ -25,15 +25,15 @@ export default function GoldCalculatorPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
     id: Date.now().toString(), // 添加id字段
-    type: "buy" as const,
+    type: 'buy' as const,
     price: 0,
     amount: 0,
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split('T')[0],
   });
 
   useEffect(() => {
-    const savedTransactions = localStorage.getItem("goldTransactions");
-    const savedCurrentPrice = localStorage.getItem("goldCurrentPrice");
+    const savedTransactions = localStorage.getItem('goldTransactions');
+    const savedCurrentPrice = localStorage.getItem('goldCurrentPrice');
     if (savedTransactions) {
       setTransactions(JSON.parse(savedTransactions));
     }
@@ -44,9 +44,10 @@ export default function GoldCalculatorPage() {
 
   const handleTransactionChange = (
     field: keyof typeof newTransaction,
-    value: string
+    value: string,
   ) => {
-    const numValue = field === "date" ? value : parseFloat(value) || 0;
+    const numValue =
+      field === 'type' || field === 'date' ? value : parseFloat(value) || 0;
     setNewTransaction((prev) => ({
       ...prev,
       [field]: numValue,
@@ -56,13 +57,13 @@ export default function GoldCalculatorPage() {
   const calculateSellProfit = (
     price: number,
     quantity: number,
-    transactions: Transaction[]
+    transactions: Transaction[],
   ) => {
     let totalQuantity = 0;
     let totalCost = 0;
 
     for (const t of transactions) {
-      if (t.type === "buy") {
+      if (t.type === 'buy') {
         totalQuantity += t.quantity || 0;
         totalCost += t.amount;
       } else {
@@ -95,11 +96,11 @@ export default function GoldCalculatorPage() {
     let profit = 0;
     let profitPercentage = 0;
 
-    if (newTransaction.type === "sell") {
+    if (newTransaction.type === 'sell') {
       const profitInfo = calculateSellProfit(
         newTransaction.price,
         quantity,
-        transactions
+        transactions,
       );
       profit = profitInfo.profit;
       profitPercentage = profitInfo.profitPercentage;
@@ -127,14 +128,14 @@ export default function GoldCalculatorPage() {
     setEditingId(null);
 
     // 保存交易列表到本地存储
-    localStorage.setItem("goldTransactions", JSON.stringify(newTransactions));
+    localStorage.setItem('goldTransactions', JSON.stringify(newTransactions));
 
     setNewTransaction({
-      id: "0",
-      type: "buy",
+      id: '0',
+      type: 'buy',
       price: 0,
       amount: 0,
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split('T')[0],
     });
   };
 
@@ -149,7 +150,15 @@ export default function GoldCalculatorPage() {
   };
 
   const deleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
+    // 先计算删除后的新数组
+    const updatedTransactions = transactions.filter((t) => t.id !== id);
+    // 更新状态
+    setTransactions(updatedTransactions);
+    // 同步到localStorage
+    localStorage.setItem(
+      'goldTransactions',
+      JSON.stringify(updatedTransactions),
+    );
   };
 
   const calculatePosition = () => {
@@ -157,7 +166,7 @@ export default function GoldCalculatorPage() {
     let totalCost = 0;
 
     transactions.forEach((transaction) => {
-      if (transaction.type === "buy") {
+      if (transaction.type === 'buy') {
         totalQuantity += transaction.quantity;
         totalCost += transaction.amount;
       } else {
@@ -188,7 +197,7 @@ export default function GoldCalculatorPage() {
   return (
     <DefaultLayout>
       <div className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <h1 className={title({ color: "violet" })}>黄金计算器</h1>
+        <h1 className={title({ color: 'violet' })}>黄金计算器</h1>
         <p className="text-default-500 mt-4">计算黄金持仓成本和盈利</p>
         <Card className="max-w-4xl w-full">
           <CardHeader className="flex gap-3"></CardHeader>
@@ -203,8 +212,10 @@ export default function GoldCalculatorPage() {
                       : new Set([])
                   }
                   onSelectionChange={(keys) => {
-                    const value = Array.from(keys)[0]?.toString() || "buy";
-                    handleTransactionChange("type", value);
+                    console.log('🚀 ~ GoldCalculatorPage ~ keys:', keys);
+                    const value = Array.from(keys)[0]?.toString() || 'buy';
+                    console.log('🚀 ~ GoldCalculatorPage ~ value:', value);
+                    handleTransactionChange('type', value);
                   }}
                 >
                   <SelectItem key="buy">买入</SelectItem>
@@ -216,7 +227,7 @@ export default function GoldCalculatorPage() {
                   placeholder="请输入单价"
                   value={newTransaction.price?.toString()}
                   onChange={(e) =>
-                    handleTransactionChange("price", e.target.value)
+                    handleTransactionChange('price', e.target.value)
                   }
                   endContent={
                     <div className="pointer-events-none text-nowrap">元/克</div>
@@ -228,7 +239,7 @@ export default function GoldCalculatorPage() {
                   placeholder="请输入金额"
                   value={newTransaction.amount?.toString()}
                   onChange={(e) =>
-                    handleTransactionChange("amount", e.target.value)
+                    handleTransactionChange('amount', e.target.value)
                   }
                   endContent={<div className="pointer-events-none">元</div>}
                 />
@@ -237,7 +248,7 @@ export default function GoldCalculatorPage() {
                   label="交易日期"
                   value={newTransaction.date}
                   onChange={(e) =>
-                    handleTransactionChange("date", e.target.value)
+                    handleTransactionChange('date', e.target.value)
                   }
                 />
               </div>
@@ -248,11 +259,11 @@ export default function GoldCalculatorPage() {
                     onPress={() => {
                       setEditingId(null);
                       setNewTransaction({
-                        id: "0",
-                        type: "buy",
+                        id: '0',
+                        type: 'buy',
                         price: 0,
                         amount: 0,
-                        date: new Date().toISOString().split("T")[0],
+                        date: new Date().toISOString().split('T')[0],
                       });
                     }}
                   >
@@ -260,7 +271,7 @@ export default function GoldCalculatorPage() {
                   </Button>
                 )}
                 <Button color="primary" onPress={addTransaction}>
-                  {editingId ? "保存修改" : "添加交易"}
+                  {editingId ? '保存修改' : '添加交易'}
                 </Button>
               </div>
 
@@ -274,27 +285,27 @@ export default function GoldCalculatorPage() {
                     >
                       <div className="space-x-4">
                         <span
-                          className={`font-semibold px-2 py-1 rounded ${transaction.type === "buy" ? "bg-success-100 text-success-600" : "bg-danger-100 text-danger-600"}`}
+                          className={`font-semibold px-2 py-1 rounded ${transaction.type === 'buy' ? 'bg-success-100 text-success-600' : 'bg-danger-100 text-danger-600'}`}
                         >
-                          {transaction.type === "buy" ? "买入" : "卖出"}
+                          {transaction.type === 'buy' ? '买入' : '卖出'}
                         </span>
                         <span>{transaction.price}元/克</span>
                         <span>{transaction.amount}元</span>
                         <span>{(transaction.quantity || 0).toFixed(4)}克</span>
                         <span>{transaction.date}</span>
-                        {transaction.type === "sell" &&
+                        {transaction.type === 'sell' &&
                           transaction.profit !== undefined && (
                             <>
                               <span
-                                className={`font-semibold ${transaction.profit >= 0 ? "text-success-600" : "text-danger-600"}`}
+                                className={`font-semibold ${transaction.profit >= 0 ? 'text-success-600' : 'text-danger-600'}`}
                               >
-                                {transaction.profit >= 0 ? "+" : ""}
+                                {transaction.profit >= 0 ? '+' : ''}
                                 {transaction.profit.toFixed(2)}元
                               </span>
                               <span
-                                className={`font-semibold ${transaction.profit >= 0 ? "text-success-600" : "text-danger-600"}`}
+                                className={`font-semibold ${transaction.profit >= 0 ? 'text-success-600' : 'text-danger-600'}`}
                               >
-                                ({transaction.profit >= 0 ? "+" : ""}
+                                ({transaction.profit >= 0 ? '+' : ''}
                                 {transaction.profitPercentage?.toFixed(2)}%)
                               </span>
                             </>
@@ -332,7 +343,7 @@ export default function GoldCalculatorPage() {
                   onChange={(e) => {
                     const price = parseFloat(e.target.value) || 0;
                     setCurrentPrice(price);
-                    localStorage.setItem("goldCurrentPrice", price.toString());
+                    localStorage.setItem('goldCurrentPrice', price.toString());
                   }}
                   endContent={
                     <div className="pointer-events-none text-nowrap">元/克</div>
@@ -367,7 +378,7 @@ export default function GoldCalculatorPage() {
                   <div className="flex justify-between">
                     <span>盈亏：</span>
                     <span
-                      className={`font-semibold ${Number(results.profit) >= 0 ? "text-success" : "text-danger"}`}
+                      className={`font-semibold ${Number(results.profit) >= 0 ? 'text-success' : 'text-danger'}`}
                     >
                       {results.profit} 元
                     </span>
@@ -375,7 +386,7 @@ export default function GoldCalculatorPage() {
                   <div className="flex justify-between">
                     <span>盈亏比例：</span>
                     <span
-                      className={`font-semibold ${Number(results.profitPercentage) >= 0 ? "text-success" : "text-danger"}`}
+                      className={`font-semibold ${Number(results.profitPercentage) >= 0 ? 'text-success' : 'text-danger'}`}
                     >
                       {results.profitPercentage}%
                     </span>
