@@ -2,7 +2,7 @@ import { Card, CardBody, CardHeader } from '@heroui/card';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Select, SelectItem } from '@heroui/select';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import DefaultLayout from '@/layouts/default';
 import { title } from '@/components/primitives';
@@ -19,15 +19,23 @@ interface Transaction {
   profitPercentage?: number;
 }
 
+interface NewTransaction {
+  id: string;
+  type: 'buy' | 'sell';
+  price: string;
+  amount: string;
+  date: string;
+}
+
 export default function GoldCalculatorPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
+  const [newTransaction, setNewTransaction] = useState<NewTransaction>({
     id: Date.now().toString(), // 添加id字段
     type: 'buy' as const,
-    price: 0,
-    amount: 0,
+    price: '',
+    amount: '',
     date: new Date().toISOString().split('T')[0],
   });
 
@@ -42,17 +50,15 @@ export default function GoldCalculatorPage() {
     }
   }, []);
 
-  const handleTransactionChange = (
-    field: keyof typeof newTransaction,
-    value: string,
-  ) => {
-    const numValue =
-      field === 'type' || field === 'date' ? value : parseFloat(value) || 0;
-    setNewTransaction((prev) => ({
-      ...prev,
-      [field]: numValue,
-    }));
-  };
+  const handleTransactionChange = useMemo(
+    () => (field: keyof typeof newTransaction, value: string) => {
+      setNewTransaction((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    },
+    [],
+  );
 
   const calculateSellProfit = (
     price: number,
@@ -84,21 +90,24 @@ export default function GoldCalculatorPage() {
 
   const addTransaction = () => {
     // 检查数值字段
+    const price = parseFloat(newTransaction.price);
+    const amount = parseFloat(newTransaction.amount);
+    
     if (
-      !newTransaction.price ||
-      !newTransaction.amount ||
-      newTransaction.price <= 0 ||
-      newTransaction.amount <= 0
+      isNaN(price) ||
+      isNaN(amount) ||
+      price <= 0 ||
+      amount <= 0
     )
       return;
 
-    const quantity = newTransaction.amount / newTransaction.price;
+    const quantity = amount / price;
     let profit = 0;
     let profitPercentage = 0;
 
     if (newTransaction.type === 'sell') {
       const profitInfo = calculateSellProfit(
-        newTransaction.price,
+        price,
         quantity,
         transactions,
       );
@@ -109,8 +118,8 @@ export default function GoldCalculatorPage() {
     const transaction: Transaction = {
       id: editingId || Date.now().toString(),
       type: newTransaction.type!, // 使用非空断言，因为我们已经确保type存在
-      price: newTransaction.price!,
-      amount: newTransaction.amount!,
+      price: price,
+      amount: amount,
       quantity: quantity,
       timestamp: Date.now(),
       date: newTransaction.date!,
@@ -133,8 +142,8 @@ export default function GoldCalculatorPage() {
     setNewTransaction({
       id: '0',
       type: 'buy',
-      price: 0,
-      amount: 0,
+      price: '',
+      amount: '',
       date: new Date().toISOString().split('T')[0],
     });
   };
@@ -142,9 +151,10 @@ export default function GoldCalculatorPage() {
   const editTransaction = (transaction: Transaction) => {
     setEditingId(transaction.id);
     setNewTransaction({
+      id: transaction.id,
       type: transaction.type,
-      price: transaction.price,
-      amount: transaction.amount,
+      price: transaction.price.toString(),
+      amount: transaction.amount.toString(),
       date: transaction.date,
     });
   };
@@ -214,7 +224,6 @@ export default function GoldCalculatorPage() {
                   onSelectionChange={(keys) => {
                     console.log('🚀 ~ GoldCalculatorPage ~ keys:', keys);
                     const value = Array.from(keys)[0]?.toString() || 'buy';
-                    console.log('🚀 ~ GoldCalculatorPage ~ value:', value);
                     handleTransactionChange('type', value);
                   }}
                 >
@@ -225,7 +234,7 @@ export default function GoldCalculatorPage() {
                   type="number"
                   label="单价"
                   placeholder="请输入单价"
-                  value={newTransaction.price?.toString()}
+                  value={newTransaction.price}
                   onChange={(e) =>
                     handleTransactionChange('price', e.target.value)
                   }
@@ -237,7 +246,7 @@ export default function GoldCalculatorPage() {
                   type="number"
                   label="金额"
                   placeholder="请输入金额"
-                  value={newTransaction.amount?.toString()}
+                  value={newTransaction.amount}
                   onChange={(e) =>
                     handleTransactionChange('amount', e.target.value)
                   }
@@ -261,8 +270,8 @@ export default function GoldCalculatorPage() {
                       setNewTransaction({
                         id: '0',
                         type: 'buy',
-                        price: 0,
-                        amount: 0,
+                        price: '',
+                        amount: '',
                         date: new Date().toISOString().split('T')[0],
                       });
                     }}
