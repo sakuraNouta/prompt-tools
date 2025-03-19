@@ -19,9 +19,10 @@ export default function IndexPage() {
           <Card className="w-full">
             <CardHeader className="flex gap-3">
               <div className="flex flex-col">
-                <p className="text-lg font-bold">
-                  <div className="icon-[mdi--gold] text-amber-500" /> 黄金计算器
-                </p>
+                <div className="text-lg font-bold flex items-center">
+                  <div className="icon-[mdi--gold] text-amber-500" />{' '}
+                  <span className="px-2">黄金计算器</span>
+                </div>
                 <p className="text-small text-default-500">
                   计算黄金持仓成本和盈利
                 </p>
@@ -35,6 +36,33 @@ export default function IndexPage() {
                     variant: 'flat',
                   })}
                   href="/gold-calculator"
+                >
+                  立即使用
+                </Link>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="w-full">
+            <CardHeader className="flex gap-3">
+              <div className="flex flex-col">
+                <div className="text-lg font-bold flex items-center">
+                  <div className="icon-[mdi--calculator-variant] text-blue-500" />
+                  <span className="px-2">个税计算器</span>
+                </div>
+                <p className="text-small text-default-500">
+                  计算个人所得税及税后收入
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <div className="flex justify-end">
+                <Link
+                  className={buttonStyles({
+                    color: 'primary',
+                    variant: 'flat',
+                  })}
+                  href="/tax-calculator"
                 >
                   立即使用
                 </Link>

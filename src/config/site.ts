@@ -14,6 +14,11 @@ export const siteConfig = {
       href: '/gold-calculator',
       icon: '/gold.svg',
     },
+    {
+      label: '个税计算器',
+      href: '/tax-calculator',
+      icon: '/tax.svg',
+    },
   ],
   links: {
     github: 'https://github.com/sakuraNouta/prompt-tools',

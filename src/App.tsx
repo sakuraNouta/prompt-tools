@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import IndexPage from '@/pages/index';
 import GoldCalculatorPage from '@/pages/gold-calculator';
+import TaxCalculatorPage from '@/pages/tax-calculator';
 import { siteConfig } from '@/config/site';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
     <Routes>
       <Route element={<IndexPage />} path="/" />
       <Route element={<GoldCalculatorPage />} path="/gold-calculator" />
+      <Route element={<TaxCalculatorPage />} path="/tax-calculator" />
     </Routes>
   );
 }
