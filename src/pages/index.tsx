@@ -2,7 +2,6 @@ import { Link } from '@heroui/link';
 import { Card, CardBody, CardHeader } from '@heroui/card';
 import { button as buttonStyles } from '@heroui/theme';
 
-import { siteConfig } from '@/config/site';
 import { title } from '@/components/primitives';
 import DefaultLayout from '@/layouts/default';
 

@@ -7,17 +7,17 @@ export const siteConfig = {
     {
       label: '工具箱',
       href: '/',
-      icon: '/toolbox.svg',
+      icon: './toolbox.svg',
     },
     {
       label: '黄金计算器',
       href: '/gold-calculator',
-      icon: '/gold.svg',
+      icon: './gold.svg',
     },
     {
       label: '个税计算器',
       href: '/tax-calculator',
-      icon: '/tax.svg',
+      icon: './tax.svg',
     },
   ],
   links: {

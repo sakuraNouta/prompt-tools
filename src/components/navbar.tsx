@@ -1,4 +1,3 @@
-import { Button } from '@heroui/button';
 import { Kbd } from '@heroui/kbd';
 import { Link } from '@heroui/link';
 import { Input } from '@heroui/input';
@@ -17,10 +16,7 @@ import clsx from 'clsx';
 import { siteConfig } from '@/config/site';
 import { ThemeSwitch } from '@/components/theme-switch';
 import {
-  TwitterIcon,
   GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
   SearchIcon,
   DocsIcon,
 } from '@/components/icons';
